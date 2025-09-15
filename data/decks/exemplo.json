@@ -1,0 +1,8 @@
+{
+  "name": "Exemplo",
+  "cards": [
+    { "front": "O que é JVM?", "back": "Máquina Virtual Java", "interval": 1, "ease": 2.5, "due": null },
+    { "front": "Constante em Java?", "back": "final", "interval": 1, "ease": 2.5, "due": null },
+    { "front": "Estrutura de repetição em Python para iteráveis?", "back": "for", "interval": 1, "ease": 2.5, "due": null }
+  ]
+}

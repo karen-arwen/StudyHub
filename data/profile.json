@@ -1,0 +1,16 @@
+{
+  "name": "Karen",
+  "coins": 19,
+  "xp": 18,
+  "level": 1,
+  "avatar_skin": "eevee_pastel",
+  "unlocked_games": [
+    "snake"
+  ],
+  "themes": [
+    "princess",
+    "theme_dark"
+  ],
+  "coin_multiplier": 1.0,
+  "sound_pack": false
+}
