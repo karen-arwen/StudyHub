@@ -2,6 +2,7 @@
 # Importa o módulo tkinter para criar interfaces gráficas e o módulo math para cálculos matemáticos
 import tkinter as tk
 import math
+from tkinter import ttk
 
 # Tenta importar o módulo winsound para emitir sons no Windows
 try:
@@ -176,7 +177,6 @@ class PlaceholderEntry(ttk.Entry):
 # widgets.py — SUBSTITUIR TagChip e TagInput por estas versões
 
 import tkinter as tk
-from tkinter import ttk
 from tags_repo import TagsRepo
 import colorsys
 import hashlib
@@ -205,7 +205,6 @@ def _contrast_fg(hex_color: str) -> str:
 
 # widgets.py — TAGS FOFOFAS (pílulas arredondadas com hover e cor)
 import tkinter as tk
-from tkinter import ttk
 from tags_repo import TagsRepo
 import colorsys, hashlib, re
 
