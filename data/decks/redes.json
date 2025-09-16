@@ -1,0 +1,33 @@
+{
+  "name": "Redes",
+  "cards": [
+    {
+      "front": "Porta padrão HTTP?",
+      "back": "80",
+      "interval": 1,
+      "ease": 2.5,
+      "due": null
+    },
+    {
+      "front": "Protocolo para e-mail de envio?",
+      "back": "SMTP",
+      "interval": 1,
+      "ease": 2.5,
+      "due": null
+    },
+    {
+      "front": "Camada do IP no modelo TCP/IP?",
+      "back": "Internet",
+      "interval": 1,
+      "ease": 2.5,
+      "due": null
+    },
+    {
+      "front": "Faixa privada que começa com 192.168?",
+      "back": "Classe C privada",
+      "interval": 1,
+      "ease": 2.5,
+      "due": null
+    }
+  ]
+}

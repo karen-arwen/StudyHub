@@ -1,16 +1,35 @@
 {
-  "name": "Karen",
-  "coins": 19,
-  "xp": 18,
-  "level": 1,
-  "avatar_skin": "eevee_pastel",
+  "name": "Arwen",
+  "coins": 40,
+  "xp": 81,
+  "level": 2,
+  "avatar_skin": "🦋",
   "unlocked_games": [
-    "snake"
+    "snake",
+    "tictactoe",
+    "memory",
+    "quiz"
   ],
   "themes": [
     "princess",
     "theme_dark"
   ],
-  "coin_multiplier": 1.0,
-  "sound_pack": false
+  "coin_multiplier": 2.0,
+  "sound_pack": false,
+  "badges": [
+    "Quiz Master (10 acertos sessão)"
+  ],
+  "learning": "Java, Redes, POO",
+  "avatar_inventory": [
+    "🌸",
+    "🦄",
+    "🐱",
+    "🐶",
+    "🐻",
+    "🐯",
+    "💜",
+    "⭐",
+    "🦋",
+    "🦊"
+  ]
 }

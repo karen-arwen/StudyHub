@@ -1,0 +1,33 @@
+{
+  "name": "POO/Java",
+  "cards": [
+    {
+      "front": "Mecanismo de reutilização que usa 'extends'?",
+      "back": "Herança",
+      "interval": 1,
+      "ease": 2.5,
+      "due": null
+    },
+    {
+      "front": "Encapsulamento expõe dados via...?",
+      "back": "getters/setters",
+      "interval": 1,
+      "ease": 2.5,
+      "due": null
+    },
+    {
+      "front": "Sobrescrita em Java?",
+      "back": "@Override",
+      "interval": 1,
+      "ease": 2.5,
+      "due": null
+    },
+    {
+      "front": "Interface define...",
+      "back": "contrato de métodos",
+      "interval": 1,
+      "ease": 2.5,
+      "due": null
+    }
+  ]
+}

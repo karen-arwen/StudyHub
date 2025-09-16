@@ -1,0 +1,12 @@
+{
+  "name": "Python",
+  "cards": [
+    {
+      "front": "Qual o Símbolo do Python",
+      "back": "Cobrinha",
+      "interval": 1,
+      "ease": 2.5,
+      "due": null
+    }
+  ]
+}

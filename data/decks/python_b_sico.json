@@ -1,0 +1,33 @@
+{
+  "name": "Python Básico",
+  "cards": [
+    {
+      "front": "Tipo imutável para sequências de Python?",
+      "back": "tuple",
+      "interval": 1,
+      "ease": 2.5,
+      "due": null
+    },
+    {
+      "front": "Qual estrutura armazena pares chave-valor?",
+      "back": "dict",
+      "interval": 1,
+      "ease": 2.5,
+      "due": null
+    },
+    {
+      "front": "Como converter string para inteiro?",
+      "back": "int()",
+      "interval": 1,
+      "ease": 2.5,
+      "due": null
+    },
+    {
+      "front": "Palavra-chave para exceções?",
+      "back": "try/except",
+      "interval": 1,
+      "ease": 2.5,
+      "due": null
+    }
+  ]
+}
