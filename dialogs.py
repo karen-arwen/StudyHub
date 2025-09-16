@@ -1,3 +1,116 @@
+# dialogs.py
+# Este arquivo implementa diversos modais (janelas de diálogo) utilizados no aplicativo, como seleção de avatar, gerenciamento de tarefas e baralhos.
+# Ele utiliza o tkinter para criar a interface gráfica e fornece classes reutilizáveis para diferentes tipos de diálogos.
+
+import tkinter as tk
+from tkinter import ttk, messagebox
+import datetime as dt
+import calendar
+from widgets import PlaceholderEntry, TagInput  # Widgets personalizados
+from tags_repo import TagsRepo  # Repositório para gerenciar tags
+
+# Classe base para modais com layout padronizado
+class Modal(ttk.Frame):
+    """Base para modais com layout padronizado (card), título e ações."""
+    def __init__(self, parent, title="Janela"):
+        self.win = tk.Toplevel(parent)
+        self.win.title(title)
+        self.win.transient(parent)  # Modal fica acima da janela principal
+        self.win.grab_set()  # Bloqueia interação com a janela principal
+        self.win.resizable(True, True)  # Permite redimensionar
+        self.win.minsize(640, 320)  # Define tamanho mínimo
+
+        super().__init__(self.win, style="Card.TFrame")
+        self.pack(padx=16, pady=16, fill=tk.BOTH, expand=True)
+
+        # Configuração de grid elástico
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=1)
+
+        # Cabeçalho
+        head = ttk.Frame(self, style="Card.TFrame")
+        head.grid(row=0, column=0, columnspan=2, sticky="ew", pady=(0, 10))
+        ttk.Label(head, text=title, style="Header.TLabel").pack(side=tk.LEFT)
+
+        self._row = 1  # Linha atual para adicionar elementos
+        self.result = None  # Resultado do modal
+
+        # Atalhos de teclado
+        self.win.bind("<Return>", lambda e: self._on_enter())
+        self.win.bind("<Escape>", lambda e: self.win.destroy())
+
+        self._ok_callback = None  # Callback para o botão OK
+
+    def _on_enter(self):
+        """Callback para pressionar Enter."""
+        if callable(self._ok_callback):
+            self._ok_callback()
+
+    def add_row(self, label_text, widget_left=None, widget_right=None):
+        """Adiciona uma linha com um rótulo e 1–2 widgets (formulário de 2 colunas)."""
+        lbl = ttk.Label(self, text=label_text)
+        lbl.grid(row=self._row, column=0, sticky="w", padx=(2, 12), pady=6)
+
+        cell = ttk.Frame(self, style="Card.TFrame")
+        cell.grid(row=self._row, column=1, sticky="ew", pady=6)
+        cell.grid_columnconfigure(0, weight=1)
+
+        if widget_left and widget_right:
+            widget_left.grid(row=0, column=0, sticky="ew")
+            ttk.Label(cell, text=" ").grid(row=0, column=1)  # Espaçador
+            widget_right.grid(row=0, column=2, sticky="w")
+        elif widget_left:
+            widget_left.grid(row=0, column=0, sticky="ew")
+        elif widget_right:
+            widget_right.grid(row=0, column=0, sticky="w")
+
+        self._row += 1
+        return cell
+
+    def add_actions(self, on_ok, ok_text="Salvar"):
+        """Adiciona uma barra de ações com botões OK e Cancelar."""
+        self._ok_callback = on_ok
+        bar = ttk.Frame(self, style="Card.TFrame")
+        bar.grid(row=self._row, column=0, columnspan=2, sticky="ew", pady=(12, 0))
+        ttk.Button(bar, text="Cancelar", command=self.win.destroy).pack(side=tk.RIGHT)
+        ttk.Button(bar, text=ok_text, style="Accent.TButton", command=on_ok).pack(side=tk.RIGHT, padx=8)
+
+# Modal para escolher um avatar
+class AvatarPicker(ttk.Frame):
+    """Modal para selecionar um avatar em uma grade."""
+    def __init__(self, parent, profile_repo):
+        self.win = tk.Toplevel(parent)
+        self.win.title("Escolher Avatar")
+        self.win.transient(parent); self.win.grab_set()
+        self.win.resizable(False, False)
+
+        super().__init__(self.win, style="Card.TFrame")
+        self.pack(padx=12, pady=12, fill=tk.BOTH, expand=True)
+
+        # Cabeçalho
+        ttk.Label(self, text="Escolha um avatar", style="Header.TLabel").pack(anchor="w", pady=(0, 8))
+
+        # Grade de avatares
+        grid = ttk.Frame(self, style="Card.TFrame"); grid.pack()
+        inv = profile_repo.data.get("avatar_inventory", [])  # Obtém inventário de avatares
+        self.result = None
+
+        if not inv:
+            ttk.Label(grid, text="Sem avatares no inventário.").pack()
+        else:
+            for i, e in enumerate(inv):
+                ttk.Button(grid, text=e, width=3,
+                           command=lambda em=e: self._pick(em)).grid(row=i//12, column=i%12, padx=3, pady=3)
+
+        # Barra de ações
+        bar = ttk.Frame(self, style="Card.TFrame"); bar.pack(fill=tk.X, pady=(12, 0))
+        ttk.Button(bar, text="Cancelar", command=self.win.destroy).pack(side=tk.RIGHT)
+
+    def _pick(self, emoji):
+        """Seleciona o avatar e fecha o modal."""
+        self.result = emoji
+        self.win.destroy()
+
 # dialogs.py (trecho) — Modal melhorado
 import tkinter as tk
 from tkinter import ttk, messagebox

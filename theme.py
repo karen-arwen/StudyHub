@@ -1,8 +1,13 @@
 # theme.py
+# Este arquivo define temas visuais para a aplicação e fornece uma classe para aplicar e gerenciar esses temas.
+
+# Dicionário THEMES:
+# Contém paletas de cores para diferentes temas visuais, como "princess", "dark" e "neon".
+# Cada tema possui chaves como "bg" (cor de fundo), "fg" (cor do texto), "accent" (cor de destaque), entre outras.
+# Essas paletas são usadas para estilizar a interface gráfica da aplicação.
+
 from tkinter import ttk
 
-# Paletas de temas
-# theme.py — paletas com 'primary'
 THEMES = {
     "princess": {
         "bg": "#F6F1FF",
@@ -51,19 +56,26 @@ THEMES = {
 
 
 class Theme:
+    # Atributos de classe:
+    # - current: Armazena o nome do tema atualmente aplicado.
+    # - palette: Contém a paleta de cores do tema atual.
+
     current = "princess"
     palette = THEMES["princess"].copy()
 
     @classmethod
     def apply(cls, root, name: str):
-        """Aplica tema ao root e configura estilos ttk."""
+        """Aplica um tema ao root e configura estilos ttk."""
+        # Obtém a paleta do tema especificado ou usa o tema "princess" como padrão.
         pal = THEMES.get(name, THEMES["princess"]).copy()
         cls.current = name
         cls.palette = pal
 
         def _get(key, default):
+            # Função auxiliar para obter valores da paleta com um valor padrão.
             return pal.get(key, default)
 
+        # Define cores principais do tema.
         bg         = _get("bg", "#FFFFFF")
         fg         = _get("fg", "#000000")
         card       = _get("card", "#FFFFFF")
@@ -72,47 +84,52 @@ class Theme:
         subtle     = _get("subtle", "#F3F4F6")
 
         try:
+            # Configura o estilo ttk usando o tema "clam".
             style = ttk.Style(root)
             style.theme_use("clam")
         except Exception:
             style = ttk.Style()
 
+        # Configura a cor de fundo do root.
         root.configure(bg=bg)
 
-        # Base
+        # Configurações de estilo para diferentes widgets:
+        # - Base: Define cores padrão para widgets.
         style.configure(".", background=bg, foreground=fg)
 
-        # Frames
+        # - Frames: Estiliza frames com a classe "Card.TFrame".
         style.configure("Card.TFrame", background=card)
         style.map("Card.TFrame", background=[("active", card)])
 
-        # Labels
+        # - Labels: Estiliza rótulos padrão e cabeçalhos.
         style.configure("TLabel", background=bg, foreground=fg)
         style.configure("Header.TLabel", background=bg, foreground=fg, font=("Segoe UI", 18, "bold"))
         style.configure("Sub.TLabel", background=bg, foreground=_get("muted", "#6B7280"))
 
-        # Buttons
+        # - Buttons: Estiliza botões padrão e botões de destaque.
         style.configure("TButton", foreground=fg, background=subtle, padding=6)
         style.map("TButton", background=[("active", _get("btn_active", subtle))])
         style.configure("Accent.TButton", background=accent, foreground=accent_fg, padding=8)
         style.map("Accent.TButton", background=[("active", _get("accent_active", accent))])
 
-        # Entry
+        # - Entry: Estiliza campos de entrada de texto.
         style.configure("TEntry", fieldbackground="#FFFFFF", background="#FFFFFF", foreground=fg)
 
-        # Treeview
+        # - Treeview: Estiliza tabelas e cabeçalhos de tabelas.
         style.configure("Treeview", background="#fafafa", fieldbackground="#fafafa", foreground=fg)
         style.configure("Treeview.Heading", background=subtle, foreground=fg)
 
-        # Progressbar
+        # - Progressbar: Estiliza barras de progresso.
         style.configure("TProgressbar", background=accent, troughcolor=subtle)
 
     @classmethod
     def switch_theme(cls, root, name: str):
         """Troca o tema ao vivo e repinta widgets básicos."""
+        # Aplica o novo tema.
         cls.apply(root, name)
         from tkinter import Frame, Canvas, Toplevel
         for w in root.winfo_children():
+            # Atualiza a cor de fundo de widgets básicos.
             if isinstance(w, (Frame, Canvas, Toplevel, ttk.Frame)):
                 try:
                     w.configure(bg=cls.palette.get("bg", "#fff"))
@@ -123,10 +140,12 @@ class Theme:
     def header(cls, parent, title="StudyHub", subtitle="produtividade • estudos • games", height=88):
         """Cria um Canvas de header estilizado."""
         import tkinter as tk
+        # Cria um Canvas para o cabeçalho.
         cvs = tk.Canvas(parent, height=height, highlightthickness=0, bd=0, bg=cls.palette.get("bg", "#fff"))
         cvs.pack(fill=tk.X)
 
         def paint(_=None):
+            # Função para desenhar o cabeçalho com gradiente e texto.
             pal = cls.palette or {}
             header_bg  = pal.get("header_bg", "#8B5CF6")
             header_fg  = pal.get("header_fg", "#FFFFFF")
@@ -143,6 +162,7 @@ class Theme:
             cvs.create_text(215, int(h*0.70), anchor="w", text=subtitle,
                             font=("Segoe UI", 12), fill=header_sub)
 
+        # Redesenha o cabeçalho ao redimensionar.
         cvs.bind("<Configure>", paint)
         paint()
         return cvs

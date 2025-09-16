@@ -1,60 +1,67 @@
 # widgets.py
+# Importa o módulo tkinter para criar interfaces gráficas e o módulo math para cálculos matemáticos
 import tkinter as tk
 import math
 
+# Tenta importar o módulo winsound para emitir sons no Windows
 try:
     import winsound
     def _beep_ok():
-        winsound.MessageBeep(winsound.MB_ICONASTERISK)
+        winsound.MessageBeep(winsound.MB_ICONASTERISK)  # Emite um som padrão
 except Exception:
     def _beep_ok():
-        # fallback silencioso
+        # Fallback silencioso caso o winsound não esteja disponível
         pass
 
+# Classe CircularProgress: Representa um widget de progresso circular
 class CircularProgress(tk.Canvas):
     def __init__(self, master, size=160, thickness=14, **kw):
         super().__init__(master, width=size, height=size, highlightthickness=0, **kw)
-        self.size=size; self.thickness=thickness
+        self.size = size  # Tamanho do widget
+        self.thickness = thickness  # Espessura do círculo
+        # Círculo de fundo
         self.bg_circle = self.create_oval(thickness, thickness, size-thickness, size-thickness,
                                           outline="#E6E6EA", width=thickness)
+        # Arco de progresso
         self.fg_arc = self.create_arc(thickness, thickness, size-thickness, size-thickness,
                                       start=90, extent=0, style=tk.ARC, width=thickness)
+        # Texto central
         self.text = self.create_text(size/2, size/2, text="00:00", font=("TkDefaultFont", 14, "bold"))
+
     def set_progress(self, ratio: float):
-        # ratio 0..1
+        # Define o progresso (0 a 1)
         self.itemconfig(self.fg_arc, extent=-360*max(0.0, min(1.0, ratio)))
+
     def set_time_text(self, s: str):
+        # Define o texto central
         self.itemconfig(self.text, text=s)
 
+# Classe BarChart: Representa um gráfico de barras
 class BarChart(tk.Canvas):
     def __init__(self, master, width=520, height=200, **kw):
         super().__init__(master, width=width, height=height, highlightthickness=0, **kw)
-        self.width=width; self.height=height
+        self.width = width  # Largura do gráfico
+        self.height = height  # Altura do gráfico
+
     def draw(self, values, labels=None, bar_fill="#8B5CF6"):
-        self.delete("all")
+        self.delete("all")  # Limpa o canvas
         if not values: return
-        n=len(values); w = self.width/(n*1.5)
-        maxv = max(values) or 1
-        for i,v in enumerate(values):
-            x = (i+1)*self.width/(n+1)
-            h = (v/maxv)*(self.height-30)
+        n = len(values)  # Número de barras
+        w = self.width / (n * 1.5)  # Largura de cada barra
+        maxv = max(values) or 1  # Valor máximo para normalização
+        for i, v in enumerate(values):
+            x = (i+1) * self.width / (n+1)  # Posição horizontal da barra
+            h = (v / maxv) * (self.height - 30)  # Altura da barra
+            # Desenha a barra
             self.create_rectangle(x-w/2, self.height-20-h, x+w/2, self.height-20,
                                   fill=bar_fill, width=0)
             if labels:
-                self.create_text(x, self.height-8, text=labels[i], font=("TkDefaultFont",9), fill="#6B6B7A")
-            self.create_text(x, self.height-30-h-10, text=str(v), font=("TkDefaultFont",9))
+                # Adiciona rótulos abaixo das barras
+                self.create_text(x, self.height-8, text=labels[i], font=("TkDefaultFont", 9), fill="#6B6B7A")
+            # Adiciona valores acima das barras
+            self.create_text(x, self.height-30-h-10, text=str(v), font=("TkDefaultFont", 9))
 
-# widgets.py (SUBSTITUIR apenas a classe CoinFloat por esta)
-import tkinter as tk
-
-try:
-    import winsound
-    def _beep_ok():
-        winsound.MessageBeep(winsound.MB_ICONASTERISK)
-except Exception:
-    def _beep_ok():
-        pass
-
+# Classe CoinFloat: Mostra um texto flutuante (ex.: '+10 🪙') que sobe e desaparece
 class CoinFloat(tk.Toplevel):
     """
     Toplevel minimalista que mostra um texto (ex.: '+10 🪙') subindo e desaparecendo.
@@ -62,77 +69,71 @@ class CoinFloat(tk.Toplevel):
     """
     def __init__(self, parent, text="+10 🪙", x=100, y=100, fg="#FFD166", bg=None):
         super().__init__(parent)
-        self.overrideredirect(True)
-        self.attributes("-topmost", True)
+        self.overrideredirect(True)  # Remove bordas da janela
+        self.attributes("-topmost", True)  # Garante que a janela fique no topo
 
-        # Posição inicial
+        # Define a posição inicial
         self.geometry(f"+{x}+{y}")
 
-        # Fundo seguro (nada de bg=""): usa o fundo do parent ou um fallback
+        # Define o fundo da janela
         if bg is None:
             try:
                 bg = parent.cget("bg")
             except Exception:
-                bg = "#000000"  # fallback neutro; será “escondido” pelo alpha
+                bg = "#000000"  # Fallback neutro
         self.configure(bg=bg)
 
-        # Canvas com fundo consistente
+        # Canvas para desenhar o texto
         self.canvas = tk.Canvas(self, width=140, height=44, bg=bg, highlightthickness=0, bd=0)
         self.canvas.pack()
 
-        # Etiqueta/Texto da moeda
+        # Texto flutuante
         self.item = self.canvas.create_text(70, 22, text=text,
                                             font=("TkDefaultFont", 14, "bold"),
                                             fill=fg)
 
-        # Estados da animação
-        self.dy = -2               # sobe 2px por frame
-        self.alpha = 0.98          # começa quase opaco
+        # Configurações da animação
+        self.dy = -2  # Velocidade vertical (sobe 2px por frame)
+        self.alpha = 0.98  # Transparência inicial
         self.attributes("-alpha", self.alpha)
 
-        _beep_ok()
-        self.after(0, self._step)
+        _beep_ok()  # Emite som (se disponível)
+        self.after(0, self._step)  # Inicia a animação
 
     def _step(self):
-        # Move texto para cima
+        # Move o texto para cima
         self.canvas.move(self.item, 0, self.dy)
 
-        # Desaparece suavemente usando -alpha do Toplevel
+        # Reduz a transparência
         self.alpha -= 0.03
         if self.alpha <= 0.02:
-            self.destroy()
+            self.destroy()  # Destroi a janela quando invisível
             return
         try:
             self.attributes("-alpha", self.alpha)
         except Exception:
-            # Se a plataforma não suportar, apenas encerra mais rápido
             self.destroy()
             return
 
-        self.after(16, self._step)  # ~60 FPS
+        self.after(16, self._step)  # Atualiza a cada ~16ms (~60 FPS)
 
     @staticmethod
     def show(parent, text, near_widget=None, offset=(0, -30), fg="#FFD166"):
-        # Calcula posição perto de um widget, se fornecido
+        # Calcula a posição inicial perto de um widget, se fornecido
         if near_widget is not None:
             nx = near_widget.winfo_rootx() + near_widget.winfo_width() // 2 + offset[0]
             ny = near_widget.winfo_rooty() + offset[1]
         else:
             nx = parent.winfo_rootx() + parent.winfo_width() // 2 + offset[0]
             ny = parent.winfo_rooty() + parent.winfo_height() // 2 + offset[1]
-        # Usa o mesmo bg do parent para evitar cor inválida
+        # Usa o mesmo fundo do parent
         try:
             bg = parent.cget("bg")
         except Exception:
             bg = None
         CoinFloat(parent, text=text, x=nx, y=ny, fg=fg, bg=bg)
 
-
-# widgets.py (ADICIONAR AO FINAL)
-import tkinter as tk
-from tkinter import ttk
-from tags_repo import TagsRepo
-
+# Classe PlaceholderEntry: Entry com placeholder (cinza), que some ao focar
 class PlaceholderEntry(ttk.Entry):
     """
     Entry com placeholder (cinza), que some ao focar.
@@ -474,20 +475,13 @@ class TagInput(ttk.Frame):
     def get_tags(self):
         return list(self.tags)
 
-
-# widgets.py — ScrollableFrame reutilizável (vertical)
 import tkinter as tk
 from tkinter import ttk
 
 class ScrollableFrame(ttk.Frame):
-    """
-    Frame com rolagem vertical:
-      - use .body como container para seus widgets
-      - mouse wheel funciona ao passar o mouse por cima
-      - ajusta largura do conteúdo para acompanhar o canvas
-    """
     def __init__(self, master, height=420):
         super().__init__(master)
+        # Canvas para rolagem
         self.canvas = tk.Canvas(self, highlightthickness=0, bd=0, height=height)
         self.vsb = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=self.vsb.set)
@@ -496,15 +490,16 @@ class ScrollableFrame(ttk.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.body = ttk.Frame(self.canvas)  # conteúdo rolagem
+        # Frame interno para conteúdo
+        self.body = ttk.Frame(self.canvas)
         self._window = self.canvas.create_window((0, 0), window=self.body, anchor="nw")
 
-        # quando o conteúdo muda de tamanho → atualiza scrollregion
+        # Atualiza a região de rolagem quando o conteúdo muda
         self.body.bind("<Configure>", self._on_body_configure)
-        # quando canvas muda de tamanho → força largura do body = largura visível
+        # Ajusta a largura do conteúdo ao canvas
         self.canvas.bind("<Configure>", self._on_canvas_configure)
 
-        # rolagem do mouse (Windows/Linux/Mac)
+        # Configura rolagem do mouse
         self.body.bind("<Enter>", self._bind_mouse)
         self.body.bind("<Leave>", self._unbind_mouse)
 
@@ -514,8 +509,8 @@ class ScrollableFrame(ttk.Frame):
     def _on_canvas_configure(self, evt):
         self.canvas.itemconfig(self._window, width=evt.width)
 
-    # mouse wheel cross-platform
     def _on_mousewheel(self, event):
+        # Rola o conteúdo com o mouse (compatível com Windows, Mac e Linux)
         if event.num == 4:   # Linux up
             self.canvas.yview_scroll(-3, "units")
         elif event.num == 5: # Linux down
@@ -526,10 +521,7 @@ class ScrollableFrame(ttk.Frame):
 
     def _bind_mouse(self, _):
         self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)   # Win/Mac
-        self.canvas.bind_all("<Button-4>", self._on_mousewheel)     # Linux
         self.canvas.bind_all("<Button-5>", self._on_mousewheel)
 
     def _unbind_mouse(self, _):
         self.canvas.unbind_all("<MouseWheel>")
-        self.canvas.unbind_all("<Button-4>")
-        self.canvas.unbind_all("<Button-5>")
